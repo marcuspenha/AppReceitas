@@ -20,8 +20,11 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   const handleSubmit = async () => {
+    setAuthError('');
+
     if (!email.trim() || !password.trim()) {
       Alert.alert('Atenção', 'Preencha e-mail e senha.');
       return;
@@ -50,7 +53,7 @@ export default function LoginScreen() {
           'Usuário não encontrado ou senha incorreta. Se não tiver uma conta, cadastre-se.';
       }
 
-      Alert.alert('Erro', mensagem);
+      setAuthError(mensagem);
     } finally {
       setLoading(false);
     }
@@ -72,24 +75,32 @@ export default function LoginScreen() {
 
         <Text style={styles.label}>E-mail</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, authError ? styles.inputError : null]}
           placeholder="seuemail.com"
           placeholderTextColor={colors.textLight}
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => {
+            setEmail(text);
+            if (authError) setAuthError('');
+          }}
         />
 
         <Text style={styles.label}>Senha</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, authError ? styles.inputError : null]}
           placeholder="Mínimo 6 caracteres"
           placeholderTextColor={colors.textLight}
           secureTextEntry
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            if (authError) setAuthError('');
+          }}
         />
+
+        {authError ? <Text style={styles.errorText}>{authError}</Text> : null}
 
         <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
@@ -108,7 +119,10 @@ export default function LoginScreen() {
 
         <TouchableOpacity
           style={styles.linkButton}
-          onPress={() => setIsSignUp(!isSignUp)}
+          onPress={() => {
+            setIsSignUp(!isSignUp);
+            setAuthError('');
+          }}
         >
           <Text style={styles.linkText}>
             {isSignUp ? 'Já tem conta? ' : 'Não tem conta? '}
@@ -180,6 +194,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 15,
     color: colors.text,
+  },
+  inputError: {
+    borderColor: '#D64545',
+  },
+  errorText: {
+    color: '#D64545',
+    fontSize: 13,
+    marginTop: 8,
+    lineHeight: 18,
   },
   button: {
     backgroundColor: colors.primary,
