@@ -4,12 +4,54 @@ import colors from '../../constants/colors';
 
 // Dados mockados — substituídos pelo Supabase depois
 const MOCK_RECIPES = [
-  { id: '1', title: 'Macarrão ao Sugo',     category: 'Massas',   time: '30 min', emoji: '🍝' },
-  { id: '2', title: 'Frango Grelhado',       category: 'Carnes',   time: '25 min', emoji: '🍗' },
-  { id: '3', title: 'Salada Caesar',         category: 'Saladas',  time: '10 min', emoji: '🥗' },
-  { id: '4', title: 'Bolo de Chocolate',     category: 'Sobremesa',time: '50 min', emoji: '🍰' },
-  { id: '5', title: 'Pizza Margherita',      category: 'Massas',   time: '45 min', emoji: '🍕' },
-  { id: '6', title: 'Sopa de Legumes',       category: 'Sopas',    time: '35 min', emoji: '🍲' },
+  {
+    id: '1',
+    title: 'Macarrão ao Sugo',
+    category: 'Massas',
+    time: '30 min',
+    emoji: '🍝',
+    description: 'Cozinhe o macarrão al dente. Refogue alho no azeite, adicione tomate pelado e deixe reduzir por 15 min. Tempere com sal, pimenta e manjericão fresco. Misture ao macarrão e sirva com parmesão.',
+  },
+  {
+    id: '2',
+    title: 'Frango Grelhado',
+    category: 'Carnes',
+    time: '25 min',
+    emoji: '🍗',
+    description: 'Marine o frango com limão, alho, sal e páprica por 20 min. Grelhe em frigideira quente por 6 min de cada lado até dourar. Sirva com legumes assados ou salada verde.',
+  },
+  {
+    id: '3',
+    title: 'Salada Caesar',
+    category: 'Saladas',
+    time: '10 min',
+    emoji: '🥗',
+    description: 'Misture alface romana, croutons e lascas de parmesão. Prepare o molho com maionese, mostarda, limão e alho. Regue sobre a salada e sirva gelada.',
+  },
+  {
+    id: '4',
+    title: 'Bolo de Chocolate',
+    category: 'Sobremesa',
+    time: '50 min',
+    emoji: '🍰',
+    description: 'Misture farinha, cacau, açúcar, ovos, leite e manteiga. Asse em forma untada a 180°C por 35 min. Cubra com ganache de chocolate meio amargo e nata quente.',
+  },
+  {
+    id: '5',
+    title: 'Pizza Margherita',
+    category: 'Massas',
+    time: '45 min',
+    emoji: '🍕',
+    description: 'Prepare a massa com farinha, fermento, sal e água morna. Deixe crescer 30 min. Abra, espalhe molho de tomate, mozarela fatiada e manjericão. Asse a 220°C por 15 min.',
+  },
+  {
+    id: '6',
+    title: 'Sopa de Legumes',
+    category: 'Sopas',
+    time: '35 min',
+    emoji: '🍲',
+    description: 'Refogue cebola e alho. Adicione cenoura, batata, abobrinha e caldo de legumes. Cozinhe por 20 min. Bata metade da sopa para engrossar. Tempere e sirva com torradas.',
+  },
 ];
 
 function RecipeCard({ item, onPress }) {
