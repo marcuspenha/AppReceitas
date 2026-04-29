@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity,
          ScrollView, StyleSheet, Alert } from 'react-native';
 import colors from '../../constants/colors';
+import { useAuth } from '../../context/AuthContext';
 
 const SETTINGS_ITEMS = [
   { id: '1', icon: '👤', label: 'Meu perfil',         description: 'Nome, foto e e-mail' },
@@ -27,17 +28,20 @@ function SettingItem({ icon, label, description, onPress }) {
 }
 
 export default function SettingsScreen({ navigation }) {
-  const handleLogout = () => {
-    Alert.alert(
-      'Sair da conta',
-      'Tem certeza que deseja sair?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Sair', style: 'destructive',
-          onPress: () => navigation.navigate('Login') },
-      ]
-    );
-  };
+  const { signOut } = useAuth(); // adicione import no topo
+
+const handleLogout = () => {
+  Alert.alert(
+    'Sair da conta',
+    'Tem certeza que deseja sair?',
+    [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Sair', style: 'destructive', onPress: signOut },
+      // signOut limpa a sessão → AuthContext atualiza user para null
+      // → Navigator redireciona para Login automaticamente
+    ]
+  );
+};
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

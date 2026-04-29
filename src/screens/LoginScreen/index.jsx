@@ -1,16 +1,41 @@
 import { View, Text, TextInput, TouchableOpacity,
-         StyleSheet, Image, KeyboardAvoidingView, Platform } from 'react-native';
+         StyleSheet, KeyboardAvoidingView,
+         Platform, Alert, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import colors from '../../constants/colors';
 
-export default function LoginScreen({ navigation }) {
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
+export default function LoginScreen() {
+  const { signIn, signUp } = useAuth();
 
-  const handleLogin = () => {
-    // Validação mínima — lógica real vem com Supabase
-    if (email.trim() && password.trim()) {
-      navigation.navigate('Home');
+  const [email,     setEmail]     = useState('');
+  const [password,  setPassword]  = useState('');
+  const [isSignUp,  setIsSignUp]  = useState(false);
+  const [loading,   setLoading]   = useState(false);
+
+  const handleSubmit = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Atenção', 'Preencha e-mail e senha.');
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert('Atenção', 'A senha deve ter no mínimo 6 caracteres.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (isSignUp) {
+        await signUp(email, password);
+        Alert.alert('Cadastro realizado!',);
+      } else {
+        await signIn(email, password);
+        // Navegação automática — AuthContext + Navigator cuidam disso
+      }
+    } catch (error) {
+      Alert.alert('Erro', error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -19,15 +44,17 @@ export default function LoginScreen({ navigation }) {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      {/* Logo / Marca */}
       <View style={styles.header}>
         <Text style={styles.emoji}>🍕</Text>
         <Text style={styles.brand}>App Receitas</Text>
         <Text style={styles.subtitle}>Suas receitas favoritas, sempre à mão</Text>
       </View>
 
-      {/* Formulário */}
       <View style={styles.form}>
+        <Text style={styles.formTitle}>
+          {isSignUp ? 'Criar conta' : 'Entrar'}
+        </Text>
+
         <Text style={styles.label}>E-mail</Text>
         <TextInput
           style={styles.input}
@@ -42,7 +69,7 @@ export default function LoginScreen({ navigation }) {
         <Text style={styles.label}>Senha</Text>
         <TextInput
           style={styles.input}
-          placeholder="••••••••"
+          placeholder="Mínimo 6 caracteres"
           placeholderTextColor={colors.textLight}
           secureTextEntry
           value={password}
@@ -50,15 +77,31 @@ export default function LoginScreen({ navigation }) {
         />
 
         <TouchableOpacity
-          style={[styles.button, (!email || !password) && styles.buttonDisabled]}
-          onPress={handleLogin}
-          activeOpacity={0.8}
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleSubmit}
+          disabled={loading}
+          activeOpacity={0.85}
         >
-          <Text style={styles.buttonText}>Entrar</Text>
+          {loading
+            ? <ActivityIndicator color={colors.white} />
+            : <Text style={styles.buttonText}>
+                {isSignUp ? 'Criar conta' : 'Entrar'}
+              </Text>
+          }
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.linkButton}>
-          <Text style={styles.linkText}>Não tem conta? <Text style={styles.linkBold}>Cadastre-se</Text></Text>
+        <TouchableOpacity
+          style={styles.linkButton}
+          onPress={() => setIsSignUp(!isSignUp)}
+        >
+          <Text style={styles.linkText}>
+            {isSignUp
+              ? 'Já tem conta? '
+              : 'Não tem conta? '}
+            <Text style={styles.linkBold}>
+              {isSignUp ? 'Entrar' : 'Cadastre-se'}
+            </Text>
+          </Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -84,7 +127,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: colors.primary,
-    letterSpacing: 0.5,
   },
   subtitle: {
     fontSize: 14,
@@ -101,6 +143,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
+  },
+  formTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: 16,
   },
   label: {
     fontSize: 13,
@@ -127,13 +175,12 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   buttonDisabled: {
-    opacity: 0.5,
+    opacity: 0.6,
   },
   buttonText: {
     color: colors.white,
     fontSize: 16,
     fontWeight: 'bold',
-    letterSpacing: 0.3,
   },
   linkButton: {
     alignItems: 'center',

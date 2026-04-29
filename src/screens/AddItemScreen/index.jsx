@@ -1,54 +1,92 @@
-import { View, Text, TextInput, TouchableOpacity,
-         ScrollView, KeyboardAvoidingView,
-         Platform, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { useState } from 'react';
 import colors from '../../constants/colors';
+import { supabase } from '../../services/supabase';
+import { useAuth } from '../../context/AuthContext';
 
 const CATEGORIES = ['Massas', 'Carnes', 'Saladas', 'Sopas', 'Sobremesa', 'Outros'];
 
 export default function AddItemScreen({ navigation }) {
-  const [title,       setTitle]       = useState('');
-  const [category,    setCategory]    = useState('');
-  const [time,        setTime]        = useState('');
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('');
+  const [time, setTime] = useState('');
   const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const isFormValid = title.trim() && category && time.trim() && description.trim();
+  const { user } = useAuth();
 
-  const handleSave = () => {
+  const isFormValid =
+    title.trim() && category && time.trim() && description.trim();
+
+  const handleSave = async () => {
     if (!isFormValid) {
       Alert.alert('Atenção', 'Preencha todos os campos antes de salvar.');
       return;
     }
-    // Integração com Supabase vem aqui futuramente
-    Alert.alert('✅ Receita salva!', `"${title}" foi adicionada com sucesso.`, [
-      { text: 'OK', onPress: () => navigation.navigate('Home') },
-    ]);
+
+    if (!user) {
+      Alert.alert('Erro', 'Usuário não autenticado.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.from('recipes').insert({
+        user_id: user.id,
+        title: title.trim(),
+        category,
+        time: time.trim(),
+        description: description.trim(),
+        emoji: '🍽️',
+      });
+
+      if (error) throw error;
+
+      Alert.alert('✅ Receita salva!', `"${title}" adicionada com sucesso.`, [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('Home'),
+        },
+      ]);
+    } catch (error) {
+      Alert.alert('Erro ao salvar', error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView
-        style={styles.container}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.pageTitle}>Nova Receita 🍳</Text>
 
-        {/* Nome */}
         <Text style={styles.label}>Nome da receita *</Text>
         <TextInput
           style={styles.input}
-          placeholder="Ex: Frango ao molho pesto"
+          placeholder="Ex: Lasanha de frango"
           placeholderTextColor={colors.textLight}
           value={title}
           onChangeText={setTitle}
         />
 
-        {/* Categoria */}
         <Text style={styles.label}>Categoria *</Text>
         <View style={styles.categoryGrid}>
           {CATEGORIES.map((cat) => (
@@ -73,36 +111,40 @@ export default function AddItemScreen({ navigation }) {
           ))}
         </View>
 
-        {/* Tempo */}
         <Text style={styles.label}>Tempo de preparo *</Text>
         <TextInput
           style={styles.input}
-          placeholder="Ex: 30 min"
+          placeholder="Ex: 40 min"
           placeholderTextColor={colors.textLight}
           value={time}
           onChangeText={setTime}
         />
 
-        {/* Descrição */}
         <Text style={styles.label}>Modo de preparo *</Text>
         <TextInput
           style={[styles.input, styles.textArea]}
-          placeholder="Descreva o passo a passo da receita..."
+          placeholder="Descreva o preparo da receita"
           placeholderTextColor={colors.textLight}
           multiline
-          numberOfLines={5}
           textAlignVertical="top"
           value={description}
           onChangeText={setDescription}
         />
 
-        {/* Botões */}
         <TouchableOpacity
-          style={[styles.button, !isFormValid && styles.buttonDisabled]}
+          style={[
+            styles.button,
+            (!isFormValid || loading) && styles.buttonDisabled,
+          ]}
           onPress={handleSave}
+          disabled={!isFormValid || loading}
           activeOpacity={0.85}
         >
-          <Text style={styles.buttonText}>Salvar Receita</Text>
+          {loading ? (
+            <ActivityIndicator color={colors.white} />
+          ) : (
+            <Text style={styles.buttonText}>Salvar Receita</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
