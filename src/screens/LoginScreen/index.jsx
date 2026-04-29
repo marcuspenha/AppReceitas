@@ -1,6 +1,14 @@
-import { View, Text, TextInput, TouchableOpacity,
-         StyleSheet, KeyboardAvoidingView,
-         Platform, Alert, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import colors from '../../constants/colors';
@@ -8,32 +16,41 @@ import colors from '../../constants/colors';
 export default function LoginScreen() {
   const { signIn, signUp } = useAuth();
 
-  const [email,     setEmail]     = useState('');
-  const [password,  setPassword]  = useState('');
-  const [isSignUp,  setIsSignUp]  = useState(false);
-  const [loading,   setLoading]   = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert('Atenção', 'Preencha e-mail e senha.');
       return;
     }
+
     if (password.length < 6) {
       Alert.alert('Atenção', 'A senha deve ter no mínimo 6 caracteres.');
       return;
     }
 
     setLoading(true);
+
     try {
       if (isSignUp) {
         await signUp(email, password);
-        Alert.alert('Cadastro realizado!',);
+        Alert.alert('Cadastro realizado!', 'Sua conta foi criada com sucesso.');
       } else {
         await signIn(email, password);
-        // Navegação automática — AuthContext + Navigator cuidam disso
       }
     } catch (error) {
-      Alert.alert('Erro', error.message);
+      let mensagem =
+        error?.message || 'Ocorreu um erro ao processar sua solicitação.';
+
+      if (error?.message === 'Invalid login credentials') {
+        mensagem =
+          'Usuário não encontrado ou senha incorreta. Se não tiver uma conta, cadastre-se.';
+      }
+
+      Alert.alert('Erro', mensagem);
     } finally {
       setLoading(false);
     }
@@ -51,14 +68,12 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.form}>
-        <Text style={styles.formTitle}>
-          {isSignUp ? 'Criar conta' : 'Entrar'}
-        </Text>
+        <Text style={styles.formTitle}>{isSignUp ? 'Criar conta' : 'Entrar'}</Text>
 
         <Text style={styles.label}>E-mail</Text>
         <TextInput
           style={styles.input}
-          placeholder="seu@email.com"
+          placeholder="seuemail.com"
           placeholderTextColor={colors.textLight}
           keyboardType="email-address"
           autoCapitalize="none"
@@ -82,12 +97,13 @@ export default function LoginScreen() {
           disabled={loading}
           activeOpacity={0.85}
         >
-          {loading
-            ? <ActivityIndicator color={colors.white} />
-            : <Text style={styles.buttonText}>
-                {isSignUp ? 'Criar conta' : 'Entrar'}
-              </Text>
-          }
+          {loading ? (
+            <ActivityIndicator color={colors.white} />
+          ) : (
+            <Text style={styles.buttonText}>
+              {isSignUp ? 'Criar conta' : 'Entrar'}
+            </Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -95,9 +111,7 @@ export default function LoginScreen() {
           onPress={() => setIsSignUp(!isSignUp)}
         >
           <Text style={styles.linkText}>
-            {isSignUp
-              ? 'Já tem conta? '
-              : 'Não tem conta? '}
+            {isSignUp ? 'Já tem conta? ' : 'Não tem conta? '}
             <Text style={styles.linkBold}>
               {isSignUp ? 'Entrar' : 'Cadastre-se'}
             </Text>

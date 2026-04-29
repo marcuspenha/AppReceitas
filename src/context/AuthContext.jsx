@@ -4,31 +4,47 @@ import { supabase } from '../services/supabase';
 const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
-  const [user,    setUser]    = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verifica sessão já existente ao abrir o app
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    // Escuta mudanças de sessão (login, logout, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => setUser(session?.user ?? null)
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      if (error.message === 'Invalid login credentials') {
+        throw new Error(
+          'Usuário não encontrado ou senha incorreta. Se não tiver uma conta, cadastre-se.'
+        );
+      }
+
+      throw error;
+    }
   };
 
   const signUp = async (email, password) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
     if (error) throw error;
   };
 
@@ -43,5 +59,4 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Hook de atalho
 export const useAuth = () => useContext(AuthContext);
