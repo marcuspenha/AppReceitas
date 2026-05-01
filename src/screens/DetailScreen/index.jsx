@@ -1,10 +1,55 @@
-import { View, Text, ScrollView,
-         TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { useState } from 'react';
+import { supabase } from '../../services/supabase';
+import Button from '../../components/Button';
 import colors from '../../constants/colors';
 
 export default function DetailScreen({ route, navigation }) {
-  // Recebe o objeto recipe passado pelo HomeScreen
-  const { recipe } = route.params;
+  const { recipe }          = route.params;
+  const [loading, setLoading] = useState(false);
+
+  const handleDelete = () => {
+    Alert.alert(
+      '🗑️ Excluir receita',
+      `Deseja excluir "${recipe.title}" permanentemente?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: async () => {
+            setLoading(true);
+            const { error } = await supabase
+              .from('recipes')
+              .delete()
+              .eq('id', recipe.id);
+
+            setLoading(false);
+
+            if (error) {
+              Alert.alert('Erro', error.message);
+            } else {
+              // Volta para Home — useFocusEffect vai recarregar a lista
+              navigation.navigate('Home');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleEdit = () => {
+    // Passa a receita para o AddItemScreen operar em modo edição
+    navigation.navigate('AddItem', { recipe });
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -16,8 +61,6 @@ export default function DetailScreen({ route, navigation }) {
       <View style={styles.hero}>
         <Text style={styles.emoji}>{recipe.emoji}</Text>
         <Text style={styles.title}>{recipe.title}</Text>
-
-        {/* Badges */}
         <View style={styles.badges}>
           <View style={styles.badge}>
             <Text style={styles.badgeText}>🍽 {recipe.category}</Text>
@@ -28,7 +71,6 @@ export default function DetailScreen({ route, navigation }) {
         </View>
       </View>
 
-      {/* Separador */}
       <View style={styles.divider} />
 
       {/* Modo de preparo */}
@@ -37,109 +79,32 @@ export default function DetailScreen({ route, navigation }) {
         <Text style={styles.description}>{recipe.description}</Text>
       </View>
 
-      {/* Ações */}
-      <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.85}
-        onPress={() => navigation.navigate('AddItem')}
-      >
-        <Text style={styles.buttonText}>✏️  Editar Receita</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.buttonOutline}
-        activeOpacity={0.85}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.buttonOutlineText}>← Voltar para receitas</Text>
-      </TouchableOpacity>
+      {/* Ações — usando componente Button reutilizável */}
+      <Button label="✏️  Editar Receita"    onPress={handleEdit}   variant="primary"  />
+      <Button label="🗑️  Excluir Receita"   onPress={handleDelete} variant="danger"   />
+      <Button label="← Voltar"              onPress={() => navigation.goBack()}
+              variant="outline" />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: 24,
-    paddingBottom: 48,
-  },
-  hero: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  emoji: {
-    fontSize: 80,
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: 14,
-  },
-  badges: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  badge: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  badgeTime: {
-    backgroundColor: colors.secondary,
-  },
-  badgeText: {
-    color: colors.white,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginBottom: 24,
-  },
-  section: {
-    marginBottom: 32,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 12,
-  },
-  description: {
-    fontSize: 15,
-    color: colors.textLight,
-    lineHeight: 24,
-  },
-  button: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  buttonText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-  buttonOutline: {
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  buttonOutlineText: {
-    color: colors.textLight,
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  container:    { flex: 1, backgroundColor: colors.background },
+  centered:     { flex: 1, justifyContent: 'center',
+                  alignItems: 'center', backgroundColor: colors.background },
+  content:      { padding: 24, paddingBottom: 48 },
+  hero:         { alignItems: 'center', marginBottom: 24 },
+  emoji:        { fontSize: 80, marginBottom: 12 },
+  title:        { fontSize: 26, fontWeight: 'bold', color: colors.text,
+                  textAlign: 'center', marginBottom: 14 },
+  badges:       { flexDirection: 'row', gap: 10 },
+  badge:        { backgroundColor: colors.primary,
+                  paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20 },
+  badgeTime:    { backgroundColor: colors.secondary },
+  badgeText:    { color: colors.white, fontSize: 13, fontWeight: '600' },
+  divider:      { height: 1, backgroundColor: colors.border, marginBottom: 24 },
+  section:      { marginBottom: 32 },
+  sectionTitle: { fontSize: 18, fontWeight: '700',
+                  color: colors.text, marginBottom: 12 },
+  description:  { fontSize: 15, color: colors.textLight, lineHeight: 24 },
 });
