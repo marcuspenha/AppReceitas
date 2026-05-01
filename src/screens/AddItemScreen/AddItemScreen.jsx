@@ -12,7 +12,7 @@ import {
 import { useState, useEffect } from 'react';
 import { supabase } from '../../services/supabase';
 import { useAuth } from '../../context/AuthContext';
-import Button from '../../components/Button';
+import Button from '../../components/Button/Button';
 import colors from '../../constants/colors';
 
 const CATEGORIES = ['Massas', 'Carnes', 'Saladas', 'Sopas', 'Sobremesa', 'Outros'];

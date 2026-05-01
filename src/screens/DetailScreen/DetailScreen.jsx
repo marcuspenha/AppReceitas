@@ -9,7 +9,7 @@ import {
 import { useMemo, useState } from 'react';
 import { supabase } from '../../services/supabase';
 import { useAuth } from '../../context/AuthContext';
-import Button from '../../components/Button';
+import Button from '../../components/Button/Button';
 import colors from '../../constants/colors';
 
 export default function DetailScreen({ route, navigation }) {

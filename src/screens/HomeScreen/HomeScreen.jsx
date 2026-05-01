@@ -12,7 +12,7 @@ import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../services/supabase';
 import { useAuth } from '../../context/AuthContext';
-import Card from '../../components/Card';
+import Card from '../../components/Card/Card';
 import colors from '../../constants/colors';
 
 const CATEGORIES = ['Todas', 'Massas', 'Carnes', 'Saladas', 'Sopas', 'Sobremesa', 'Outros'];
