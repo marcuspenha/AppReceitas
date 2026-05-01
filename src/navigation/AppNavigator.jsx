@@ -39,11 +39,22 @@ export default function AppNavigator() {
         {user ? (
           // Rotas autenticadas
           <>
-            <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{ title: 'Minhas Receitas' }}
-            />
+           
+<Stack.Screen
+  name="Home"
+  component={HomeScreen}
+  options={({ navigation }) => ({
+    title: 'Minhas Receitas',
+    headerRight: () => (
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Settings')}
+        style={{ marginRight: 12 }}
+      >
+        <Text style={{ fontSize: 22 }}>⚙️</Text>
+      </TouchableOpacity>
+    ),
+  })}
+/>
             <Stack.Screen
               name="AddItem"
               component={AddItemScreen}
