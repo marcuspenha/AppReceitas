@@ -27,7 +27,7 @@ function SettingItem({ icon, label, description, onPress }) {
 }
 
 export default function SettingsScreen() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
 
   const handleLogout = () => {
     Alert.alert('Sair da conta', 'Tem certeza que deseja sair?', [
@@ -43,8 +43,8 @@ export default function SettingsScreen() {
         <View style={styles.avatar}>
           <Text style={styles.avatarEmoji}>👨‍🍳</Text>
         </View>
-        <Text style={styles.profileName}>Chef do App</Text>
-        <Text style={styles.profileEmail}>chef@receitas.com</Text>
+        <Text style={styles.profileName}>{user?.email?.split('@')[0] ?? 'Chef'}</Text>
+        <Text style={styles.profileEmail}>{user?.email ?? ''}</Text>
       </View>
 
       <View style={styles.card}>

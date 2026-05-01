@@ -12,6 +12,7 @@ import {
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import colors from '../../constants/colors';
+import { Image } from 'react-native'
 
 export default function LoginScreen() {
   const { signIn, signUp } = useAuth();
@@ -65,7 +66,11 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.header}>
-        <Text style={styles.emoji}>🍕</Text>
+        <Image
+  source={require('../../../assets/logo.png')} // coloque uma imagem em /assets/
+  style={{ width: 80, height: 80, marginBottom: 8 }}
+  resizeMode="contain"
+/>
         <Text style={styles.brand}>App Receitas</Text>
         <Text style={styles.subtitle}>Suas receitas favoritas, sempre à mão</Text>
       </View>
