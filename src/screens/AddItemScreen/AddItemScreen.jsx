@@ -15,8 +15,12 @@ import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/Button/Button';
 import colors from '../../constants/colors';
 
-const CATEGORIES = ['Massas', 'Carnes', 'Saladas', 'Sopas', 'Sobremesa', 'Outros'];
-const EMOJIS = ['🍝', '🍗', '🥗', '🍰', '🍕', '🍲', '🥩', '🥘', '🍜', '🥚', '🍞'];
+const CATEGORIES = ['Massas', 'Carnes', 'Saladas', 'Sopas', 'Sobremesas', 'Outros'];
+
+const EMOJIS = [
+  '🍝', '🍗', '🥗', '🍰', '🍕', '🍲',
+  '🥩', '🥘', '🍜', '🥚', '🍞', '🍳',
+];
 
 export default function AddItemScreen({ route, navigation }) {
   const { user } = useAuth();
@@ -48,15 +52,12 @@ export default function AddItemScreen({ route, navigation }) {
   }, [isEditing, editingRecipe]);
 
   const isFormValid = Boolean(
-    title.trim() &&
-      category &&
-      time.trim() &&
-      description.trim()
+    title.trim() && category && time.trim() && description.trim()
   );
 
   const handleAfterSave = () => {
-  navigation.navigate('Home');
-};
+    navigation.navigate('Home');
+  };
 
   const handleSave = async () => {
     if (!user?.id) {
@@ -95,26 +96,17 @@ export default function AddItemScreen({ route, navigation }) {
         if (error) throw error;
 
         Alert.alert('Receita atualizada!', 'As alterações foram salvas com sucesso.', [
-          {
-            text: 'OK',
-            onPress: handleAfterSave,
-          },
+          { text: 'OK', onPress: handleAfterSave },
         ]);
       } else {
         const { error } = await supabase
           .from('recipes')
-          .insert({
-            user_id: user.id,
-            ...payload,
-          });
+          .insert({ user_id: user.id, ...payload });
 
         if (error) throw error;
 
         Alert.alert('Receita salva!', `${title.trim()} adicionada com sucesso.`, [
-          {
-            text: 'OK',
-            onPress: handleAfterSave,
-          },
+          { text: 'OK', onPress: handleAfterSave },
         ]);
       }
     } catch (error) {
@@ -135,79 +127,111 @@ export default function AddItemScreen({ route, navigation }) {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.pageTitle}>
-          {isEditing ? '✏️ Editar Receita' : '🍳 Nova Receita'}
-        </Text>
-
-        <Text style={styles.label}>Ícone da receita</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.emojiBar}
-        >
-          {EMOJIS.map((item) => (
-            <TouchableOpacity
-              key={item}
-              style={[styles.emojiBtn, emoji === item && styles.emojiBtnActive]}
-              onPress={() => setEmoji(item)}
-              activeOpacity={0.8}
-              disabled={loading}
-            >
-              <Text style={styles.emojiItem}>{item}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        <Text style={styles.label}>Nome da receita *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Ex: Frango ao molho pesto"
-          placeholderTextColor={colors.textLight}
-          value={title}
-          onChangeText={setTitle}
-          editable={!loading}
-        />
-
-        <Text style={styles.label}>Categoria *</Text>
-        <View style={styles.categoryGrid}>
-          {CATEGORIES.map((cat) => (
-            <TouchableOpacity
-              key={cat}
-              style={[styles.chip, category === cat && styles.chipActive]}
-              onPress={() => setCategory(cat)}
-              activeOpacity={0.8}
-              disabled={loading}
-            >
-              <Text style={[styles.chipText, category === cat && styles.chipTextActive]}>
-                {cat}
-              </Text>
-            </TouchableOpacity>
-          ))}
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.pageTitle}>
+            {isEditing ? '✏️ Editar Receita' : '🍳 Nova Receita'}
+          </Text>
+          <Text style={styles.pageSubtitle}>
+            {isEditing
+              ? 'Atualize os dados da sua receita'
+              : 'Adicione uma nova receita ao seu caderno'}
+          </Text>
         </View>
 
-        <Text style={styles.label}>Tempo de preparo *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Ex: 30 min"
-          placeholderTextColor={colors.textLight}
-          value={time}
-          onChangeText={setTime}
-          editable={!loading}
-        />
+        {/* Seletor de emoji */}
+        <View style={styles.section}>
+          <Text style={styles.label}>Escolha um ícone</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.emojiBar}
+          >
+            {EMOJIS.map((item) => (
+              <TouchableOpacity
+                key={item}
+                style={[styles.emojiBtn, emoji === item && styles.emojiBtnActive]}
+                onPress={() => setEmoji(item)}
+                activeOpacity={0.8}
+                disabled={loading}
+              >
+                <Text style={styles.emojiItem}>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
-        <Text style={styles.label}>Modo de preparo *</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Descreva o passo a passo..."
-          placeholderTextColor={colors.textLight}
-          multiline
-          numberOfLines={5}
-          textAlignVertical="top"
-          value={description}
-          onChangeText={setDescription}
-          editable={!loading}
-        />
+        {/* Input: Nome */}
+        <View style={styles.section}>
+          <Text style={styles.label}>
+            Nome da receita <Text style={styles.required}>*</Text>
+          </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ex: Frango ao molho pesto"
+            placeholderTextColor={colors.textMuted}
+            value={title}
+            onChangeText={setTitle}
+            editable={!loading}
+          />
+        </View>
 
+        {/* Categoria */}
+        <View style={styles.section}>
+          <Text style={styles.label}>
+            Categoria <Text style={styles.required}>*</Text>
+          </Text>
+          <View style={styles.categoryGrid}>
+            {CATEGORIES.map((cat) => (
+              <TouchableOpacity
+                key={cat}
+                style={[styles.chip, category === cat && styles.chipActive]}
+                onPress={() => setCategory(cat)}
+                activeOpacity={0.8}
+                disabled={loading}
+              >
+                <Text style={[styles.chipText, category === cat && styles.chipTextActive]}>
+                  {cat}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Input: Tempo */}
+        <View style={styles.section}>
+          <Text style={styles.label}>
+            Tempo de preparo <Text style={styles.required}>*</Text>
+          </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ex: 30 min"
+            placeholderTextColor={colors.textMuted}
+            value={time}
+            onChangeText={setTime}
+            editable={!loading}
+          />
+        </View>
+
+        {/* Textarea: Descrição */}
+        <View style={styles.section}>
+          <Text style={styles.label}>
+            Modo de preparo <Text style={styles.required}>*</Text>
+          </Text>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            placeholder="Descreva o passo a passo da receita..."
+            placeholderTextColor={colors.textMuted}
+            multiline
+            numberOfLines={6}
+            textAlignVertical="top"
+            value={description}
+            onChangeText={setDescription}
+            editable={!loading}
+          />
+        </View>
+
+        {/* Ações */}
         <View style={styles.actions}>
           <Button
             label={isEditing ? 'Salvar alterações' : 'Salvar Receita'}
@@ -216,7 +240,6 @@ export default function AddItemScreen({ route, navigation }) {
             loading={loading}
             disabled={!isFormValid}
           />
-
           <Button
             label="Cancelar"
             onPress={() => navigation.goBack()}
@@ -238,44 +261,64 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
-    padding: 24,
-    paddingBottom: 48,
+    padding: 20,
+    paddingBottom: 40,
   },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
+
+  // Header
+  header: {
     marginBottom: 24,
   },
-  label: {
-    fontSize: 13,
-    fontWeight: '700',
+  pageTitle: {
+    fontSize: 26,
+    fontWeight: 'bold',
     color: colors.text,
-    marginBottom: 8,
-    marginTop: 16,
   },
+  pageSubtitle: {
+    fontSize: 14,
+    color: colors.textLight,
+    marginTop: 6,
+  },
+
+  // Seções
+  section: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 10,
+  },
+  required: {
+    color: colors.danger,
+  },
+
+  // Input
   input: {
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
     color: colors.text,
   },
   textArea: {
-    height: 130,
-    paddingTop: 12,
+    height: 140,
+    paddingTop: 14,
   },
+
+  // Emoji selector
   emojiBar: {
-    gap: 8,
+    gap: 10,
     paddingVertical: 4,
   },
   emojiBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
+    width: 52,
+    height: 52,
+    borderRadius: 14,
     borderWidth: 2,
     borderColor: colors.border,
     alignItems: 'center',
@@ -284,22 +327,24 @@ const styles = StyleSheet.create({
   },
   emojiBtnActive: {
     borderColor: colors.primary,
-    backgroundColor: colors.background,
+    backgroundColor: colors.primary + '15',
   },
   emojiItem: {
-    fontSize: 26,
+    fontSize: 28,
   },
+
+  // Category chips
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 10,
   },
   chip: {
     borderWidth: 1.5,
     borderColor: colors.border,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    borderRadius: 24,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
     backgroundColor: colors.white,
   },
   chipActive: {
@@ -307,14 +352,16 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
   },
   chipText: {
-    fontSize: 13,
+    fontSize: 14,
     color: colors.textLight,
     fontWeight: '600',
   },
   chipTextActive: {
     color: colors.white,
   },
+
+  // Ações
   actions: {
-    marginTop: 32,
+    marginTop: 16,
   },
 });

@@ -13,11 +13,17 @@ import colors from '../../constants/colors';
 export default function Button({
   label,
   onPress,
-  variant  = 'primary',
-  loading  = false,
+  variant = 'primary',
+  loading = false,
   disabled = false,
 }) {
   const isDisabled = disabled || loading;
+
+  const getSpinnerColor = () => {
+    if (variant === 'primary') return colors.white;
+    if (variant === 'danger') return colors.danger;
+    return colors.primary;
+  };
 
   return (
     <TouchableOpacity
@@ -28,12 +34,13 @@ export default function Button({
       ]}
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.85}
+      activeOpacity={0.8}
     >
-      {loading
-        ? <ActivityIndicator color={variant === 'primary' ? colors.white : colors.primary} />
-        : <Text style={[styles.label, styles[`${variant}Label`]]}>{label}</Text>
-      }
+      {loading ? (
+        <ActivityIndicator color={getSpinnerColor()} />
+      ) : (
+        <Text style={[styles.label, styles[`${variant}Label`]]}>{label}</Text>
+      )}
     </TouchableOpacity>
   );
 }
@@ -41,26 +48,55 @@ export default function Button({
 const styles = StyleSheet.create({
   base: {
     borderRadius: 12,
-    paddingVertical: 14,
+    paddingVertical: 16,
     alignItems: 'center',
     marginBottom: 12,
   },
 
-  // Variante primary
-  primary:      { backgroundColor: colors.primary },
-  primaryLabel: { color: colors.white, fontSize: 15, fontWeight: 'bold' },
+  // Variante primary (laranja sólido)
+  primary: {
+    backgroundColor: colors.primary,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  primaryLabel: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 
-  // Variante outline
-  outline:      { borderWidth: 1.5, borderColor: colors.border,
-                  backgroundColor: 'transparent' },
-  outlineLabel: { color: colors.textLight, fontSize: 14, fontWeight: '600' },
+  // Variante outline (borda laranja)
+  outline: {
+    borderWidth: 2,
+    borderColor: colors.primary,
+    backgroundColor: 'transparent',
+  },
+  outlineLabel: {
+    color: colors.primary,
+    fontSize: 15,
+    fontWeight: '600',
+  },
 
-  // Variante danger
-  danger:       { borderWidth: 1.5, borderColor: colors.danger,
-                  backgroundColor: 'transparent' },
-  dangerLabel:  { color: colors.danger, fontSize: 15, fontWeight: '700' },
+  // Variante danger (vermelho)
+  danger: {
+    borderWidth: 2,
+    borderColor: colors.danger,
+    backgroundColor: 'transparent',
+  },
+  dangerLabel: {
+    color: colors.danger,
+    fontSize: 15,
+    fontWeight: '700',
+  },
 
-  disabled: { opacity: 0.4 },
+  disabled: {
+    opacity: 0.5,
+  },
 
-  label: { letterSpacing: 0.2 },
+  label: {
+    letterSpacing: 0.3,
+  },
 });

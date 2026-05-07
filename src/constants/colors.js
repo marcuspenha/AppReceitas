@@ -1,27 +1,30 @@
-// Paleta culinária — base quente e caseira
-// Regra 60/30/10: neutros dominam, cores quentes só onde importa
+// Design System AppReceitas 2026
+// Paleta moderna, flat e minimalista
 
 const colors = {
-  // ─── Primárias (10% da interface — botões, CTAs, destaques) ───
-  primary:       '#ED6E3A',  // Laranja culinário — botões principais
-  primaryDark:   '#A4330D',  // Terracota — estado pressionado/hover
-  secondary:     '#6C9E4F',  // Verde ervas — categorias, selos frescos
+  // Primárias
+  primary:       '#FF8C00',  // Laranja quente — botões principais, CTAs
+  primaryDark:   '#E07800',  // Laranja escuro — estado pressionado
+  secondary:     '#4CAF50',  // Verde suave — badges, categorias
 
-  // ─── Neutros (60% da interface — fundos e superfícies) ───
-  background:    '#FFF8F1',  // Creme quente — fundo geral das telas
-  surface:       '#DBCDB5',  // Bege claro — cards, modais, inputs
-  accent:        '#E9B08E',  // Pêssego — destaques suaves, bordas ativas
-
-  // ─── Textos (30% da interface) ───
-  text:          '#5E3C2C',  // Marrom escuro — texto principal
-  textLight:     '#7A6255',  // Marrom acinzentado — subtítulos, placeholders
-
-  // ─── Utilitários ───
-  danger:        '#C0392B',  // Vermelho — deletar, alertas
-  success:       '#6C9E4F',  // Verde — confirmações (reutiliza secondary)
-  border:        '#DBCDB5',  // Bege — bordas de inputs e cards
+  // Neutros
+  background:    '#F5F5F5',  // Cinza claro — fundo geral
+  surface:       '#FFFFFF',  // Branco — cards, modais, inputs
   white:         '#FFFFFF',
-  headerText:    '#FFFFFF',  // Texto no header (contraste sobre primary)
+
+  // Textos
+  text:          '#333333',  // Texto escuro principal
+  textLight:     '#666666',  // Subtítulos, placeholders
+  textMuted:     '#999999',  // Texto desabilitado
+
+  // Utilitários
+  danger:        '#E53935',  // Vermelho — deletar, alertas
+  success:       '#4CAF50',  // Verde — confirmações
+  border:        '#E0E0E0',  // Bordas de inputs e cards
+  shadow:        '#000000',  // Cor base para sombras
+
+  // Header
+  headerText:    '#FFFFFF',  // Texto no header (contraste)
 };
 
 export default colors;

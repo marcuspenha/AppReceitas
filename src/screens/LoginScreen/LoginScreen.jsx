@@ -8,11 +8,11 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import colors from '../../constants/colors';
-import { Image } from 'react-native'
 
 export default function LoginScreen() {
   const { signIn, signUp } = useAuth();
@@ -61,175 +61,188 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View style={styles.header}>
-        <Image
-  source={require('../../../assets/logo.png')} // coloque uma imagem em /assets/
-  style={{ width: 80, height: 80, marginBottom: 8 }}
-  resizeMode="contain"
-/>
-        <Text style={styles.brand}>App Receitas</Text>
-        <Text style={styles.subtitle}>Suas receitas favoritas, sempre à mão</Text>
-      </View>
+    <View style={styles.gradient}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <View style={styles.header}>
+          <Image
+            source={require('../../../assets/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.subtitle}>Suas receitas favoritas, sempre à mao</Text>
+        </View>
 
-      <View style={styles.form}>
-        <Text style={styles.formTitle}>{isSignUp ? 'Criar conta' : 'Entrar'}</Text>
-
-        <Text style={styles.label}>E-mail</Text>
-        <TextInput
-          style={[styles.input, authError ? styles.inputError : null]}
-          placeholder="seuemail.com"
-          placeholderTextColor={colors.textLight}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={(text) => {
-            setEmail(text);
-            if (authError) setAuthError('');
-          }}
-        />
-
-        <Text style={styles.label}>Senha</Text>
-        <TextInput
-          style={[styles.input, authError ? styles.inputError : null]}
-          placeholder="Mínimo 6 caracteres"
-          placeholderTextColor={colors.textLight}
-          secureTextEntry
-          value={password}
-          onChangeText={(text) => {
-            setPassword(text);
-            if (authError) setAuthError('');
-          }}
-        />
-
-        {authError ? <Text style={styles.errorText}>{authError}</Text> : null}
-
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleSubmit}
-          disabled={loading}
-          activeOpacity={0.85}
-        >
-          {loading ? (
-            <ActivityIndicator color={colors.white} />
-          ) : (
-            <Text style={styles.buttonText}>
-              {isSignUp ? 'Criar conta' : 'Entrar'}
-            </Text>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.linkButton}
-          onPress={() => {
-            setIsSignUp(!isSignUp);
-            setAuthError('');
-          }}
-        >
-          <Text style={styles.linkText}>
-            {isSignUp ? 'Já tem conta? ' : 'Não tem conta? '}
-            <Text style={styles.linkBold}>
-              {isSignUp ? 'Entrar' : 'Cadastre-se'}
-            </Text>
+        <View style={styles.form}>
+          <Text style={styles.formTitle}>
+            {isSignUp ? 'Criar conta' : 'Entrar'}
           </Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+
+          <Text style={styles.label}>E-mail</Text>
+          <TextInput
+            style={[styles.input, authError ? styles.inputError : null]}
+            placeholder="seu@email.com"
+            placeholderTextColor={colors.textMuted}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text);
+              if (authError) setAuthError('');
+            }}
+          />
+
+          <Text style={styles.label}>Senha</Text>
+          <TextInput
+            style={[styles.input, authError ? styles.inputError : null]}
+            placeholder="Mínimo 6 caracteres"
+            placeholderTextColor={colors.textMuted}
+            secureTextEntry
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+              if (authError) setAuthError('');
+            }}
+          />
+
+          {authError ? <Text style={styles.errorText}>{authError}</Text> : null}
+
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleSubmit}
+            disabled={loading}
+            activeOpacity={0.85}
+          >
+            {loading ? (
+              <ActivityIndicator color={colors.white} />
+            ) : (
+              <Text style={styles.buttonText}>
+                {isSignUp ? 'Criar conta' : 'Entrar'}
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.linkButton}
+            onPress={() => {
+              setIsSignUp(!isSignUp);
+              setAuthError('');
+            }}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.linkText}>
+              {isSignUp ? 'Já tem conta? ' : 'Não tem conta? '}
+              <Text style={styles.linkBold}>
+                {isSignUp ? 'Entrar' : 'Criar conta'}
+              </Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+    backgroundColor: '#FFF8F0',
+  },
   container: {
     flex: 1,
-    backgroundColor: colors.background,
     justifyContent: 'center',
-    paddingHorizontal: 28,
+    paddingHorizontal: 24,
   },
   header: {
     alignItems: 'center',
     marginBottom: 40,
   },
-  emoji: {
-    fontSize: 64,
-    marginBottom: 8,
-  },
-  brand: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.primary,
+  logo: {
+    width: 420,
+    height: 200,
+    marginBottom: 12,
   },
   subtitle: {
     fontSize: 14,
     color: colors.textLight,
-    marginTop: 6,
+    marginTop: 8,
     textAlign: 'center',
   },
   form: {
     backgroundColor: colors.white,
-    borderRadius: 16,
-    padding: 24,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    borderRadius: 24,
+    padding: 28,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 5,
   },
   formTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     color: colors.text,
-    marginBottom: 16,
+    marginBottom: 24,
+    textAlign: 'center',
   },
   label: {
     fontSize: 13,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 6,
+    marginBottom: 8,
     marginTop: 12,
   },
   input: {
     backgroundColor: colors.background,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
     color: colors.text,
   },
   inputError: {
-    borderColor: '#D64545',
+    borderColor: colors.danger,
+    borderWidth: 2,
   },
   errorText: {
-    color: '#D64545',
+    color: colors.danger,
     fontSize: 13,
-    marginTop: 8,
-    lineHeight: 18,
+    marginTop: 12,
+    lineHeight: 20,
+    textAlign: 'center',
   },
   button: {
     backgroundColor: colors.primary,
     borderRadius: 12,
-    paddingVertical: 14,
+    paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 28,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
     color: colors.white,
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: 'bold',
+    letterSpacing: 0.3,
   },
   linkButton: {
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 20,
+    paddingVertical: 8,
   },
   linkText: {
-    fontSize: 13,
+    fontSize: 14,
     color: colors.textLight,
   },
   linkBold: {

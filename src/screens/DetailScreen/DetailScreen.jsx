@@ -37,7 +37,6 @@ export default function DetailScreen({ route, navigation }) {
       navigation.goBack();
       return;
     }
-
     navigation.navigate('Home');
   };
 
@@ -46,7 +45,6 @@ export default function DetailScreen({ route, navigation }) {
       Alert.alert('Erro', 'Receita inválida para edição.');
       return;
     }
-
     navigation.navigate('AddItem', { recipe: safeRecipe });
   };
 
@@ -102,29 +100,30 @@ export default function DetailScreen({ route, navigation }) {
     }
   };
 
+  // Estado de erro - receita não encontrada
   if (!safeRecipe) {
     return (
       <View style={styles.centered}>
+        <View style={styles.errorIcon}>
+          <Text style={styles.errorEmoji}>{'🍽️'}</Text>
+        </View>
         <Text style={styles.errorTitle}>Receita não encontrada</Text>
         <Text style={styles.errorText}>
           Não foi possível carregar os detalhes desta receita.
         </Text>
         <View style={styles.errorActions}>
-          <Button
-            label="Voltar"
-            onPress={handleBackToHome}
-            variant="outline"
-          />
+          <Button label="Voltar" onPress={handleBackToHome} variant="outline" />
         </View>
       </View>
     );
   }
 
+  // Estado de loading
   if (loading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Processando ação...</Text>
+        <Text style={styles.loadingText}>Processando...</Text>
       </View>
     );
   }
@@ -135,45 +134,48 @@ export default function DetailScreen({ route, navigation }) {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
+      {/* Hero Section */}
       <View style={styles.hero}>
-        <Text style={styles.emoji}>{safeRecipe.emoji}</Text>
+        <View style={styles.emojiContainer}>
+          <Text style={styles.emoji}>{safeRecipe.emoji}</Text>
+        </View>
         <Text style={styles.title}>{safeRecipe.title}</Text>
 
         <View style={styles.badges}>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>🍽 {safeRecipe.category}</Text>
+          <View style={[styles.badge, styles.badgeCategory]}>
+            <Text style={styles.badgeText}>{'🍽️'} {safeRecipe.category}</Text>
           </View>
-
           <View style={[styles.badge, styles.badgeTime]}>
-            <Text style={styles.badgeText}>⏱ {safeRecipe.time}</Text>
+            <Text style={styles.badgeText}>{'⏱️'} {safeRecipe.time}</Text>
           </View>
         </View>
       </View>
 
-      <View style={styles.divider} />
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Modo de preparo</Text>
+      {/* Conteúdo */}
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>{'📝'} Modo de preparo</Text>
+        <View style={styles.divider} />
         <Text style={styles.description}>{safeRecipe.description}</Text>
       </View>
 
+      {/* Ações */}
       <View style={styles.actions}>
         <Button
-          label="✏️ Editar receita"
+          label="Editar receita"
           onPress={handleEdit}
-          variant="primary"
+          variant="outline"
           disabled={loading}
         />
         <Button
-          label="🗑️ Excluir receita"
+          label="Excluir receita"
           onPress={confirmDelete}
           variant="danger"
           disabled={loading}
         />
         <Button
-          label="← Voltar"
+          label="Voltar"
           onPress={handleBackToHome}
-          variant="outline"
+          variant="primary"
           disabled={loading}
         />
       </View>
@@ -191,54 +193,78 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.background,
-    paddingHorizontal: 24,
+    paddingHorizontal: 32,
   },
   content: {
-    padding: 24,
-    paddingBottom: 48,
+    padding: 20,
+    paddingBottom: 40,
   },
+
+  // Hero
   hero: {
     alignItems: 'center',
     marginBottom: 24,
+    paddingTop: 8,
+  },
+  emojiContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 5,
   },
   emoji: {
-    fontSize: 80,
-    marginBottom: 12,
+    fontSize: 60,
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: 'bold',
     color: colors.text,
     textAlign: 'center',
-    marginBottom: 14,
+    marginBottom: 16,
+    lineHeight: 36,
   },
   badges: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 12,
     flexWrap: 'wrap',
     justifyContent: 'center',
   },
   badge: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 24,
+  },
+  badgeCategory: {
     backgroundColor: colors.primary,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
   },
   badgeTime: {
     backgroundColor: colors.secondary,
   },
   badgeText: {
     color: colors.white,
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
   },
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
+
+  // Card de conteúdo
+  card: {
+    backgroundColor: colors.white,
+    borderRadius: 20,
+    padding: 24,
     marginBottom: 24,
-  },
-  section: {
-    marginBottom: 32,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   sectionTitle: {
     fontSize: 18,
@@ -246,21 +272,44 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginBottom: 12,
   },
-  description: {
-    fontSize: 15,
-    color: colors.textLight,
-    lineHeight: 24,
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginBottom: 16,
   },
+  description: {
+    fontSize: 16,
+    color: colors.textLight,
+    lineHeight: 26,
+  },
+
+  // Ações
   actions: {
     marginTop: 8,
   },
+
+  // Loading
   loadingText: {
     marginTop: 12,
     fontSize: 14,
     color: colors.textLight,
   },
+
+  // Erro
+  errorIcon: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  errorEmoji: {
+    fontSize: 48,
+  },
   errorTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     color: colors.text,
     marginBottom: 8,
@@ -274,6 +323,6 @@ const styles = StyleSheet.create({
   },
   errorActions: {
     width: '100%',
-    marginTop: 24,
+    marginTop: 32,
   },
 });

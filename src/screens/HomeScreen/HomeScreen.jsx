@@ -15,7 +15,14 @@ import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/Card/Card';
 import colors from '../../constants/colors';
 
-const CATEGORIES = ['Todas', 'Massas', 'Carnes', 'Saladas', 'Sopas', 'Sobremesa', 'Outros'];
+const CATEGORIES = [
+  { id: 'todas', label: 'Todas', emoji: '🍽️' },
+  { id: 'massas', label: 'Massas', emoji: '🍝' },
+  { id: 'carnes', label: 'Carnes', emoji: '🥩' },
+  { id: 'saladas', label: 'Saladas', emoji: '🥗' },
+  { id: 'sobremesas', label: 'Sobremesas', emoji: '🍰' },
+  { id: 'sopas', label: 'Sopas', emoji: '🍲' },
+];
 
 export default function HomeScreen({ navigation }) {
   const { user } = useAuth();
@@ -58,40 +65,56 @@ export default function HomeScreen({ navigation }) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>Carregando receitas...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.greeting}>
-        <Text style={styles.greetingText}>Olá, Chef!</Text>
-        <Text style={styles.greetingSub}>
-          {recipes.length > 0
-            ? `${recipes.length} receita(s) salva(s)`
-            : 'Adicione sua primeira receita!'}
-        </Text>
+      {/* Header com saudação */}
+      <View style={styles.header}>
+        <View style={styles.greetingRow}>
+          <View>
+            <Text style={styles.greetingText}>{'Olá, Chef! 👨‍🍳'}</Text>
+            <Text style={styles.greetingSub}>
+              {recipes.length > 0
+                ? `${recipes.length} receita${recipes.length > 1 ? 's' : ''} salva${recipes.length > 1 ? 's' : ''}`
+                : 'Adicione sua primeira receita!'}
+            </Text>
+          </View>
+          <View style={styles.recipeCount}>
+            <Text style={styles.recipeCountNumber}>{recipes.length}</Text>
+            <Text style={styles.recipeCountLabel}>receitas</Text>
+          </View>
+        </View>
       </View>
 
+      {/* Filtros por categoria */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.filterBar}
       >
-        {CATEGORIES.map((cat) => (
-          <TouchableOpacity
-            key={cat}
-            style={[styles.chip, selected === cat && styles.chipActive]}
-            onPress={() => setSelected(cat)}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.chipText, selected === cat && styles.chipTextActive]}>
-              {cat}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {CATEGORIES.map((cat) => {
+          const isActive = selected === cat.label;
+          return (
+            <TouchableOpacity
+              key={cat.id}
+              style={[styles.chip, isActive && styles.chipActive]}
+              onPress={() => setSelected(cat.label)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.chipEmoji}>{cat.emoji}</Text>
+              <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
+                {cat.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
 
+      {/* Lista de receitas */}
       <FlatList
         data={filtered}
         keyExtractor={(item) => String(item.id)}
@@ -99,13 +122,17 @@ export default function HomeScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyEmoji}>🍳</Text>
+            <View style={styles.emptyIconContainer}>
+              <Text style={styles.emptyEmoji}>{'🍳'}</Text>
+            </View>
             <Text style={styles.emptyText}>
               {selected === 'Todas'
                 ? 'Nenhuma receita ainda'
                 : `Nenhuma receita em "${selected}"`}
             </Text>
-            <Text style={styles.emptySubText}>Toque no + para adicionar!</Text>
+            <Text style={styles.emptySubText}>
+              Cadastre sua primeira receita e comece a cozinhar!
+            </Text>
           </View>
         }
         renderItem={({ item }) => (
@@ -119,78 +146,164 @@ export default function HomeScreen({ navigation }) {
         )}
       />
 
+      {/* FAB - Nova receita */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => navigation.navigate('AddItem')}
         activeOpacity={0.85}
       >
-        <Text style={styles.fabIcon}>＋</Text>
+        <Text style={styles.fabIcon}>+</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.background,
   },
-  greeting: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 },
-  greetingText: { fontSize: 24, fontWeight: 'bold', color: colors.text },
-  greetingSub: { fontSize: 14, color: colors.textLight, marginTop: 2 },
-  filterBar: { paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: colors.textLight,
+  },
+  header: {
+    backgroundColor: colors.white,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  greetingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  greetingText: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  greetingSub: {
+    fontSize: 14,
+    color: colors.textLight,
+    marginTop: 4,
+  },
+  recipeCount: {
+    backgroundColor: colors.primary + '15',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 14,
+    alignItems: 'center',
+  },
+  recipeCountNumber: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  recipeCountLabel: {
+    fontSize: 11,
+    color: colors.primary,
+    fontWeight: '500',
+  },
+  filterBar: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    gap: 10,
+  },
   chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1.5,
     borderColor: colors.border,
-    borderRadius: 20,
+    borderRadius: 24,
     paddingHorizontal: 16,
-    paddingVertical: 7,
+    paddingVertical: 10,
     backgroundColor: colors.white,
+    gap: 6,
   },
   chipActive: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
   },
+  chipEmoji: {
+    fontSize: 16,
+  },
   chipText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: colors.textLight,
   },
   chipTextActive: {
     color: colors.white,
   },
-  list: { paddingHorizontal: 16, paddingBottom: 100 },
-  empty: { alignItems: 'center', paddingTop: 60 },
-  emptyEmoji: { fontSize: 56, marginBottom: 16 },
-  emptyText: { fontSize: 18, fontWeight: '700', color: colors.text },
+  list: {
+    paddingHorizontal: 16,
+    paddingBottom: 100,
+  },
+  empty: {
+    alignItems: 'center',
+    paddingTop: 60,
+    paddingHorizontal: 32,
+  },
+  emptyIconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: colors.primary + '15',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  emptyEmoji: {
+    fontSize: 48,
+  },
+  emptyText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+    textAlign: 'center',
+  },
   emptySubText: {
     fontSize: 14,
     color: colors.textLight,
     marginTop: 8,
     textAlign: 'center',
+    lineHeight: 22,
   },
   fab: {
     position: 'absolute',
-    bottom: 28,
-    right: 24,
+    bottom: 24,
+    right: 20,
     backgroundColor: colors.primary,
-    width: 58,
-    height: 58,
-    borderRadius: 29,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 6,
     shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.4,
-    shadowRadius: 6,
+    shadowRadius: 12,
+    elevation: 8,
   },
   fabIcon: {
-    fontSize: 28,
+    fontSize: 32,
     color: colors.white,
-    lineHeight: 32,
+    fontWeight: '300',
+    marginTop: -2,
   },
 });
