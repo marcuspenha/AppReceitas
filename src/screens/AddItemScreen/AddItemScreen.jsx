@@ -55,13 +55,8 @@ export default function AddItemScreen({ route, navigation }) {
   );
 
   const handleAfterSave = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-      return;
-    }
-
-    navigation.navigate('Home');
-  };
+  navigation.navigate('Home');
+};
 
   const handleSave = async () => {
     if (!user?.id) {
