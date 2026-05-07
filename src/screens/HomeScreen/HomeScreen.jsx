@@ -94,6 +94,7 @@ export default function HomeScreen({ navigation }) {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
+        style={styles.filterScroll}
         contentContainerStyle={styles.filterBar}
       >
         {CATEGORIES.map((cat) => {
@@ -118,6 +119,7 @@ export default function HomeScreen({ navigation }) {
       <FlatList
         data={filtered}
         keyExtractor={(item) => String(item.id)}
+        style={styles.flatList}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
@@ -219,31 +221,48 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: '500',
   },
+  filterScroll: {
+    flexGrow: 0,
+    flexShrink: 0,
+  },
   filterBar: {
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 14,
     gap: 10,
+    alignItems: 'center',
+  },
+  flatList: {
+    flex: 1,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1.5,
     borderColor: colors.border,
-    borderRadius: 24,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     backgroundColor: colors.white,
     gap: 6,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
   },
   chipActive: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
+    shadowColor: colors.primary,
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
   },
   chipEmoji: {
-    fontSize: 16,
+    fontSize: 15,
   },
   chipText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: colors.textLight,
   },
