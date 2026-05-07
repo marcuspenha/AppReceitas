@@ -56,7 +56,10 @@ export default function AddItemScreen({ route, navigation }) {
   );
 
   const handleAfterSave = () => {
-    navigation.navigate('Home');
+    navigation.reset({  
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
   };
 
   const handleSave = async () => {
