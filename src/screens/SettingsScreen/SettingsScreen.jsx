@@ -1,21 +1,46 @@
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert, Image } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import colors from '../../constants/colors';
 
 const SETTINGS_ITEMS = [
-  { id: '1', icon: '👤', label: 'Meu perfil',      description: 'Nome, foto e e-mail' },
-  { id: '2', icon: '🔒', label: 'Alterar senha',    description: 'Segurança da conta' },
-  { id: '3', icon: '🌙', label: 'Tema',             description: 'Claro / Escuro' },
-  { id: '4', icon: '🔔', label: 'Notificações',     description: 'Preferências de aviso' },
-  { id: '5', icon: '🗑️', label: 'Limpar receitas',  description: 'Remove todos os dados locais' },
-  { id: '6', icon: '📄', label: 'Termos de uso',    description: 'Política de privacidade' },
+  {
+    id: '1',
+    icon: require('../../../assets/images/icons/perfil.png'),
+    label: 'Meu perfil',
+    description: 'Nome, foto e e-mail',
+  },
+  {
+    id: '2',
+    icon: require('../../../assets/images/icons/cadeado.png'),
+    label: 'Alterar senha',
+    description: 'Segurança da conta',
+  },
+  {
+    id: '3',
+    icon: require('../../../assets/images/icons/lua.png'),
+    label: 'Tema',
+    description: 'Claro / Escuro',
+  },
+  {
+    id: '4',
+    icon: require('../../../assets/images/icons/sino.png'),
+    label: 'Notificações',
+    description: 'Preferências de aviso',
+  },
+  { id: '5', 
+    icon: require('../../../assets/images/icons/lixeira.png'),
+    label: 'Limpar receitas',  description: 'Remove todos os dados locais' },
+  { id: '6', icon: null, emoji: '📄', label: 'Termos de uso',    description: 'Política de privacidade' },
 ];
 
-function SettingItem({ icon, label, description, onPress }) {
+function SettingItem({ icon, emoji, label, description, onPress }) {
   return (
     <TouchableOpacity style={styles.item} onPress={onPress} activeOpacity={0.75}>
       <View style={styles.itemIcon}>
-        <Text style={styles.itemEmoji}>{icon}</Text>
+        {icon
+          ? <Image source={icon} style={styles.itemImage} />
+          : <Text style={styles.itemEmoji}>{emoji}</Text>
+        }
       </View>
       <View style={styles.itemBody}>
         <Text style={styles.itemLabel}>{label}</Text>
@@ -33,7 +58,6 @@ export default function SettingsScreen() {
     Alert.alert('Sair da conta', 'Tem certeza que deseja sair?', [
       { text: 'Cancelar', style: 'cancel' },
       { text: 'Sair', style: 'destructive', onPress: signOut },
-      // signOut → AuthContext seta user=null → Navigator exibe Login automaticamente
     ]);
   };
 
@@ -51,7 +75,10 @@ export default function SettingsScreen() {
         {SETTINGS_ITEMS.map((item, index) => (
           <View key={item.id}>
             <SettingItem
-              icon={item.icon} label={item.label} description={item.description}
+              icon={item.icon}
+              emoji={item.emoji}
+              label={item.label}
+              description={item.description}
               onPress={() => Alert.alert(item.label, 'Em breve disponível!')}
             />
             {index < SETTINGS_ITEMS.length - 1 && <View style={styles.separator} />}
@@ -86,6 +113,7 @@ const styles = StyleSheet.create({
   itemIcon:        { width: 38, height: 38, borderRadius: 10,
                      backgroundColor: colors.background, alignItems: 'center',
                      justifyContent: 'center', marginRight: 14 },
+  itemImage:       { width: 22, height: 22, tintColor: colors.text },
   itemEmoji:       { fontSize: 20 },
   itemBody:        { flex: 1 },
   itemLabel:       { fontSize: 15, fontWeight: '600', color: colors.text },
