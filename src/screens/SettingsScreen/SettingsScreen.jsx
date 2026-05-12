@@ -5,30 +5,30 @@ import colors from '../../constants/colors';
 const SETTINGS_ITEMS = [
   {
     id: '1',
-    icon: require('../../../assets/images/icons/perfil.png'),
+    icon: require('../../../assets/images/icons/profile.png'),
     label: 'Meu perfil',
     description: 'Nome, foto e e-mail',
   },
   {
     id: '2',
-    icon: require('../../../assets/images/icons/cadeado.png'),
+    icon: require('../../../assets/images/icons/ChangePassword.png'),
     label: 'Alterar senha',
     description: 'Segurança da conta',
   },
   {
     id: '3',
-    icon: require('../../../assets/images/icons/lua.png'),
+    icon: require('../../../assets/images/icons/Theme.png'),
     label: 'Tema',
     description: 'Claro / Escuro',
   },
   {
     id: '4',
-    icon: require('../../../assets/images/icons/sino.png'),
+    icon: require('../../../assets/images/icons/Notifications.png'),
     label: 'Notificações',
     description: 'Preferências de aviso',
   },
   { id: '5', 
-    icon: require('../../../assets/images/icons/lixeira.png'),
+    icon: require('../../../assets/images/icons/ClearRecipes.png'),
     label: 'Limpar receitas',  description: 'Remove todos os dados locais' },
   { id: '6', icon: null, emoji: '📄', label: 'Termos de uso',    description: 'Política de privacidade' },
 ];
@@ -64,9 +64,10 @@ export default function SettingsScreen() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.profile}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarEmoji}>👨‍🍳</Text>
-        </View>
+        <Image
+  source={require('../../../assets/images/icons/Chef.png')}
+  style={styles.avatarImage}
+/>
         <Text style={styles.profileName}>{user?.email?.split('@')[0] ?? 'Chef'}</Text>
         <Text style={styles.profileEmail}>{user?.email ?? ''}</Text>
       </View>
@@ -98,9 +99,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container:       { flex: 1, backgroundColor: colors.background },
   profile:         { alignItems: 'center', paddingVertical: 32, paddingHorizontal: 24 },
-  avatar:          { width: 80, height: 80, borderRadius: 40,
-                     backgroundColor: colors.surface, alignItems: 'center',
-                     justifyContent: 'center', marginBottom: 12 },
+  avatarImage:     { width: 80, height: 80, borderRadius: 40 },
   avatarEmoji:     { fontSize: 40 },
   profileName:     { fontSize: 20, fontWeight: 'bold', color: colors.text },
   profileEmail:    { fontSize: 13, color: colors.textLight, marginTop: 2 },

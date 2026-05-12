@@ -45,7 +45,7 @@ export default function AppNavigator() {
                     style={{ marginRight: 12 }}
                   >
                     <Image
-                      source={require('../../assets/images/icons/config.png')}
+                      source={require('../../assets/images/icons/AccountSettings.png')}
                       style={{ width: 24, height: 24 }}
                     />
                   </TouchableOpacity>
