@@ -29,6 +29,7 @@ Aplicativo móvel de gerenciamento de receitas culinárias desenvolvido com Reac
 ---
 
 ### Adicionar Receita
+<img width="200" height="420" alt="image" src="https://github.com/user-attachments/assets/5dfe7bf1-2e8b-471a-bbe8-47cc93ca5253" />
 
 <!-- Substitua pelo caminho real: ![Adicionar](./screenshots/add.png) -->
 
