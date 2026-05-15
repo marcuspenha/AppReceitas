@@ -36,12 +36,14 @@ Aplicativo móvel de gerenciamento de receitas culinárias desenvolvido com Reac
 ---
 
 ### Detalhes da Receita
+<img width="200" height="420" alt="image" src="https://github.com/user-attachments/assets/10aa3328-999c-4503-88eb-a47e57d26e2f" />
 
 <!-- Substitua pelo caminho real: ![Detalhes](./screenshots/detail.png) -->
 
 ---
 
 ### Configurações
+<img width="200" height="420" alt="image" src="https://github.com/user-attachments/assets/ec7d2288-4e11-4907-a8c0-cdb796ca44dc" />
 
 <!-- Substitua pelo caminho real: ![Configurações](./screenshots/settings.png) -->
 
