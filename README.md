@@ -16,7 +16,7 @@ Aplicativo móvel de gerenciamento de receitas culinárias desenvolvido com Reac
 
 ### Login
 
-<img width="720" height="720" alt="WhatsApp Image 2026-05-15 at 10 51 12" src="https://github.com/user-attachments/assets/e253328b-95e3-4ac7-b1ab-63445cb9afd7" />
+<img width="280" height="420" alt="WhatsApp Image 2026-05-15 at 10 51 12" src="https://github.com/user-attachments/assets/e253328b-95e3-4ac7-b1ab-63445cb9afd7" />
 <!-- Substitua pelo caminho real: ![Login](./screenshots/login.png) -->
 
 ---
